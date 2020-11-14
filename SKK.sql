@@ -16,14 +16,13 @@ CREATE TABLE Kennel (Id int IDENTITY(1,1) PRIMARY KEY, Name varchar(50));
 
 -- Note: I earlier used int and bigint for certain numbers but it's better to use varchar since we don't want to perform any math calculations on these numbers and since 0 will be truncated.
 
-ALTER TABLE Dog ADD FOREIGN KEY (OwnerId) REFERENCES Owner(Id);			-- These must already be in the tables for references to work!
+ALTER TABLE Dog ADD FOREIGN KEY (OwnerId) REFERENCES Owner(Id);			-- Note: OwnerId must already exist in the table for references/ALTER to work!
 ALTER TABLE Dog ADD FOREIGN KEY (KullId) REFERENCES Kull(Id);
 ALTER TABLE Dog ADD FOREIGN KEY (RaceId) REFERENCES Race(Id);
 ALTER TABLE Veterinary ADD FOREIGN KEY (DogId) REFERENCES Dog(Id);
 ALTER TABLE Kull ADD FOREIGN KEY (UppfödarId) REFERENCES Uppfödare(Id);
 ALTER TABLE Uppfödare ADD FOREIGN KEY (KennelId) REFERENCES Kennel(Id);
 
--- Vilken ordning ska man lägga till allt i?
 -- Vart kommer mamman och pappan in? Man måste joina kullen för det?
 
 INSERT INTO Owner(Name, Address, Telephone, Mobile, TelephoneWork) VALUES ('Jorvén Pär', 'Ribbingsgatan 14 504 66 Borås', '033412180', '0708697048', '0325669048');
@@ -116,13 +115,13 @@ EXEC (@SelectedColumnMerge);			-- Will execute the "dynamic SQL statement".
 EXEC MONSTERPROC;
 
 ----
-DROP PROC IF EXISTS MONSTERPROC;
+DROP PROC IF EXISTS SearchDog;
 
-CREATE PROCEDURE MONSTERPROC @MySearchString varchar(100) = 'T', @SelectedColumn varchar(100) = 'Sex' AS		-- Stored procedure with parameters. These parameters are not different from a DECLARE.
+CREATE PROCEDURE SearchDog @MySearchString varchar(100) = 'T', @SelectedColumn varchar(100) = 'Sex' AS		-- Stored procedure with parameters. These parameters are not different from a DECLARE.
 DECLARE @SelectedColumnMerge varchar(500) = 'SELECT Regnr, Name, Tattoo, Chipnr, Sex, Race FROM Dog WHERE ' + @SelectedColumn + ' LIKE ''%' + @MySearchString + '%'''
 EXEC (@SelectedColumnMerge);			-- Will execute the "dynamic SQL statement". TODO: explain this exec; what differs it from the one below?
 
-EXEC MONSTERPROC;
+EXEC SearchDog;
 
 ----
 /*
