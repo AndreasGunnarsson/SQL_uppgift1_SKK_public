@@ -2,7 +2,7 @@ USE Student11;
 
 DROP TABLE IF EXISTS Veterinary;
 DROP TABLE IF EXISTS Dog;
-DROP TABLE IF EXISTS Owner;
+DROP TABLE IF EXISTS [Owner];
 DROP TABLE IF EXISTS Kull;
 DROP TABLE IF EXISTS Uppfödare;
 DROP TABLE IF EXISTS Kennel;
@@ -12,16 +12,16 @@ DROP TABLE IF EXISTS Race;
 CREATE TABLE Race (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(100) NOT NULL);
 -- CREATE TABLE Dog (Id int IDENTITY(1,1) PRIMARY KEY, OwnerId int, KullId int, Lost bit DEFAULT 0, Regnr varchar(50) NOT NULL UNIQUE, [Name] varchar(50), Tattoo varchar(50) UNIQUE, Chipnr varchar(50) UNIQUE, RaceId int, Sex varchar(1), Color varchar(50));
 CREATE TABLE Dog (Id int IDENTITY(1,1) PRIMARY KEY, OwnerId int, KullId int, Lost bit DEFAULT 0, Regnr varchar(50) NOT NULL, [Name] varchar(50), Tattoo varchar(50), Chipnr varchar(50), RaceId int, Sex varchar(1), Color varchar(50));
-CREATE TABLE Owner (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(50), Address varchar(50), Telephone varchar(50), Mobile varchar(50), TelephoneWork varchar(50));
+CREATE TABLE [Owner] (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(50), [Address] varchar(50), Telephone varchar(50), Mobile varchar(50), TelephoneWork varchar(50));
 CREATE TABLE Veterinary (Id int IDENTITY(1,1) PRIMARY KEY, DogId int, [Date] date, [Name] varchar(50), [Result] varchar(50));
 CREATE TABLE Kull (Id int IDENTITY(1,1) PRIMARY KEY, UppfödarId int, [Date] date, MotherId int, FatherId int);
-CREATE TABLE Uppfödare (Id int IDENTITY(1,1) PRIMARY KEY, KennelId int, [Name] varchar(50), Address varchar(50), Email varchar(50), Mobile varchar(50));
+CREATE TABLE Uppfödare (Id int IDENTITY(1,1) PRIMARY KEY, KennelId int, [Name] varchar(50), [Address] varchar(50), Email varchar(50), Mobile varchar(50));
 CREATE TABLE Kennel (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(50));
 
 -- CREATE UNIQUE NONCLUSTERED INDEX I2 ON Race([Name]) WHERE [Name] IS NOT NULL; -- UNIQUE: The index must be unique.	-- TODO: Get this to work! We want unique indexes!
 -- Note: I earlier used int and bigint for certain numbers but it's better to use varchar since we don't want to perform any math calculations on these numbers and since 0 will be truncated.
 
-ALTER TABLE Dog ADD FOREIGN KEY (OwnerId) REFERENCES Owner(Id);			-- Note: OwnerId must already exist in the table for references/ALTER to work!
+ALTER TABLE Dog ADD FOREIGN KEY (OwnerId) REFERENCES [Owner](Id);			-- Note: OwnerId must already exist in the table for references/ALTER to work!
 ALTER TABLE Dog ADD FOREIGN KEY (KullId) REFERENCES Kull(Id);
 ALTER TABLE Dog ADD FOREIGN KEY (RaceId) REFERENCES Race(Id);
 ALTER TABLE Veterinary ADD FOREIGN KEY (DogId) REFERENCES Dog(Id);
@@ -30,17 +30,17 @@ ALTER TABLE Uppfödare ADD FOREIGN KEY (KennelId) REFERENCES Kennel(Id);
 
 -- Vart kommer mamman och pappan in? Man måste joina kullen för det?
 
-INSERT INTO Owner([Name], Address, Telephone, Mobile, TelephoneWork) VALUES ('Jorvén Pär', 'Ribbingsgatan 14 504 66 Borås', '033412180', '0708697048', '0325669048');	-- Id 1
-INSERT INTO Owner([Name], Address, Mobile) VALUES ('Briland Carin', 'Persbergsvägen 5 142 91  Skogås', '073-9015365');			-- Morsans. Id 2
-INSERT INTO Owner([Name]) VALUES ('Fake Man');				-- Farsans. Id 3
+INSERT INTO [Owner]([Name], [Address], Telephone, Mobile, TelephoneWork) VALUES ('Jorvén Pär', 'Ribbingsgatan 14 504 66 Borås', '033412180', '0708697048', '0325669048');	-- Id 1
+INSERT INTO [Owner]([Name], [Address], Mobile) VALUES ('Briland Carin', 'Persbergsvägen 5 142 91  Skogås', '073-9015365');			-- Morsans. Id 2
+INSERT INTO [Owner]([Name]) VALUES ('Fake Man');				-- Farsans. Id 3
 
 INSERT INTO Kennel([Name]) VALUES ('LISSMAS');				-- Id 1
 INSERT INTO Kennel([Name]) VALUES ('HONEYFARMS');			-- Farsans. Id 2
 INSERT INTO Kennel([Name]) VALUES ('JACKIES TERRIFIC');		-- Morsan. Id 3
 
-INSERT INTO Uppfödare(KennelId, [Name], Address, Email, Mobile) VALUES (1, 'Briland Carin', 'Persbergsvägen 5 142 91 Skogås', 'lakarhjalpen@gmail.com', '0739015365');
-INSERT INTO Uppfödare(KennelId, [Name], Address) VALUES (2, 'Lindius Birgitta', 'Grödinge');				-- Farsans uppfödare.
-INSERT INTO Uppfödare(KennelId, [Name], Address) VALUES (3, 'Lidholm Henry', 'Sorunda');					-- Morsan.
+INSERT INTO Uppfödare(KennelId, [Name], [Address], Email, Mobile) VALUES (1, 'Briland Carin', 'Persbergsvägen 5 142 91 Skogås', 'lakarhjalpen@gmail.com', '0739015365');
+INSERT INTO Uppfödare(KennelId, [Name], [Address]) VALUES (2, 'Lindius Birgitta', 'Grödinge');				-- Farsans uppfödare.
+INSERT INTO Uppfödare(KennelId, [Name], [Address]) VALUES (3, 'Lidholm Henry', 'Sorunda');					-- Morsan.
 
 INSERT INTO Kull(UppfödarId, [Date], MotherId, FatherId) VALUES (1, '2005-06-08', 3, 4);		-- Huvudkaraktären, Syster och Broder.
 INSERT INTO Kull(UppfödarId, [Date]) VALUES (2, '1996-05-08');				-- Farsans.
@@ -67,7 +67,7 @@ INSERT INTO Veterinary(DogId, [Date], [Name], [Result]) VALUES (4, '1997-10-07',
 -------------------------- SELECTs for all the tables created above
 
 SELECT * FROM Dog;
-SELECT * FROM Owner;
+SELECT * FROM [Owner];
 SELECT * FROM Veterinary;
 SELECT * FROM Kull;
 SELECT * FROM Uppfödare;
@@ -153,27 +153,11 @@ EXEC (@SelectedColumnMerge);			-- Will execute the "dynamic SQL statement".
 
 EXEC MONSTERPROC; */
 
------------------------ Test with Proc and View
-CREATE OR ALTER PROCEDURE ProcTest AS
-SELECT Regnr, [Name] FROM Dog;
-
-EXEC ProcTest;
-
-CREATE OR ALTER VIEW ViewTest AS
-SELECT Regnr, [Name] FROM Dog;
-
-SELECT * FROM ViewTest;
-
--- En PROCEDURE kan man se som en metod.
--- Allt som man kan göra i en VIEW kan man göra i en PROCEDURE (samt lite till).
--- VIEW:s kan endast användas för SELECT.
--- Man kan ha parametrar i en PROCEDURE, detta går inte i en VIEW.
--- I en PROCEDURE kan man ha flera statements, detta går inte i en VIEW.
--- Om man ska göra INSERT (eller något annat än en SELECT) så är det PROCEDURE som gäller.
 
 --------------- View used inside the searching procedure below.
 CREATE OR ALTER VIEW DogList AS
-SELECT Dog.Regnr, Dog.[Name], Dog.Tattoo, Dog.Chipnr, Dog.Sex, Race.[Name] AS Race FROM Dog INNER JOIN Race ON Dog.RaceId = Race.Id;
+SELECT Dog.Regnr, Dog.[Name], Dog.Tattoo, Dog.Chipnr, Dog.Sex, Race.[Name] AS Race
+FROM Dog INNER JOIN Race ON Dog.RaceId = Race.Id;
 
 SELECT * FROM DogList;
 
@@ -201,18 +185,19 @@ EXEC SearchProcedure @Regnr = '35', @Name = 'Terrific';		-- Searches Regner '35'
 
 -------------------------- Search version 1
 DECLARE @SearchString varchar(100) = '%T%'		-- Works. The limitiation is that we cant search a specific field withouth changin the WHERE. In version 2 we have a specific variable.
-SELECT Regnr, Dog.[Name], Tattoo, Chipnr, Sex, Race.[Name] AS Race FROM Dog INNER JOIN Race ON Race.Id = Dog.RaceId
+SELECT Regnr, Dog.[Name], Tattoo, Chipnr, Sex, Race.[Name] AS Race
+FROM Dog INNER JOIN Race ON Race.Id = Dog.RaceId
 WHERE Sex LIKE @SearchString;
 
 --------------------- Search version 2 - Adds a variable for choosing a column.
 
-CREATE OR ALTER PROCEDURE SearchDog @MySearchString varchar(100) = 'T', @SelectedColumn varchar(100) = 'Sex' AS		-- Stored procedure with parameters. These parameters are not different from a DECLARE.
+CREATE OR ALTER PROCEDURE SearchDog1 @MySearchString varchar(100) = 'T', @SelectedColumn varchar(100) = 'Sex' AS		-- Stored procedure with parameters. These parameters are not different from a DECLARE.
 BEGIN
 	DECLARE @SelectedColumnMerge varchar(500) = 'SELECT Regnr, Dog.[Name], Tattoo, Chipnr, Sex, Race.[Name] FROM Dog INNER JOIN Race ON Race.Id=Dog.RaceId WHERE ' + @SelectedColumn + ' LIKE ''%' + @MySearchString + '%'''	-- We've added the % signs into the dynamic SQL statement so that the parameters and arguments will be easier for the user. Two single quote (') works as a delimiter.
 	EXEC (@SelectedColumnMerge)			-- Will execute the "dynamic SQL statement". TODO: explain this exec; what differs it from the one below?
 END;
 
-EXEC SearchDog;
+EXEC SearchDog1;
 --------------------- Search version 3 - Combination of "Search version 2", the view DogList and 
 CREATE OR ALTER PROCEDURE SearchDog2
 @SearchString varchar(100) = NULL,
@@ -227,23 +212,25 @@ EXEC SearchDog2 @SearchString = 'T', @SelectedColumn = 'Sex';
 CREATE OR ALTER PROCEDURE DogOwner
 @DogId int = NULL AS
 BEGIN
-	SELECT Owner.[Name], Owner.Address, Owner.Telephone, Owner.Mobile, Owner.TelephoneWork FROM Dog INNER JOIN Owner ON Owner.Id = Dog.OwnerId WHERE Dog.Id = @DogId
+	SELECT [Owner].[Name], [Owner].[Address], [Owner].Telephone, [Owner].Mobile, [Owner].TelephoneWork
+	FROM Dog INNER JOIN [Owner] ON [Owner].Id = Dog.OwnerId
+	WHERE Dog.Id = @DogId
 END;
 
-EXEC DogOwner @DogId = 3;
+EXEC DogOwner @DogId = 5;
 
 --------------- Uppfödare till specifik hund
 CREATE OR ALTER PROCEDURE DogBreeder
 @DogId int = NULL AS
 BEGIN
-	SELECT Uppfödare.[Name], Uppfödare.Address, Uppfödare.Email, Uppfödare.Mobile FROM Dog
+	SELECT Uppfödare.[Name], Uppfödare.[Address], Uppfödare.Email, Uppfödare.Mobile FROM Dog
 	INNER JOIN Kull ON Kull.Id = Dog.KullId
 	INNER JOIN Uppfödare ON Uppfödare.Id = Kull.UppfödarId
 	WHERE Dog.Id = @DogId
 END;
 
-EXEC DogBreeder @DogId = 3;
---------------- Veterinär-besök till specifik hund
+EXEC DogBreeder @DogId = 5;
+--------------- Veterinärs-besök för specifik hund
 CREATE OR ALTER PROCEDURE DogVet
 @DogId int = NULL AS
 BEGIN
@@ -317,7 +304,8 @@ CREATE OR ALTER PROCEDURE NewDog
 @Sex varchar(1) = NULL,
 @Color varchar(50) = NULL AS
 BEGIN
-	INSERT INTO Dog(OwnerId, KullId, Regnr, [Name], Tattoo, Chipnr, RaceId, Sex, Color) VALUES (@OwnerId, @KullId, @Regnr, @Name, @Tattoo, @Chipnr, @RaceId, @Sex, @Color)
+	INSERT INTO Dog(OwnerId, KullId, Regnr, [Name], Tattoo, Chipnr, RaceId, Sex, Color)
+	VALUES (@OwnerId, @KullId, @Regnr, @Name, @Tattoo, @Chipnr, @RaceId, @Sex, @Color)
 END;
 
 EXEC NewDog @Regnr = 'S666/99', @Name = 'Fido', @Sex = 'X', @Color = 'matte black';
@@ -329,27 +317,47 @@ CREATE OR ALTER PROCEDURE NewOwner
 @Mobile varchar(50) = NULL,
 @TelephoneWork varchar(50) = NULL AS
 BEGIN
-	INSERT INTO Owner([Name], [Address], Telephone, Mobile, TelephoneWork) VALUES (@Name, @Address, @Telephone, @Mobile, @TelephoneWork)
+	INSERT INTO [Owner]([Name], [Address], Telephone, Mobile, TelephoneWork)
+	VALUES (@Name, @Address, @Telephone, @Mobile, @TelephoneWork)
 END;
 
 EXEC NewOwner @Name = 'Bobbby', @Address = 'Korsvägen', @Telephone = '000-000 00 00';
 ----------------------- Hund byter ägare
+CREATE OR ALTER PROCEDURE ChangeOwner
+@DogId int = NULL,
+@OwnerId int = NULL AS
+BEGIN
+	UPDATE Dog					-- Update the table Dog.
+	SET OwnerId = @OwnerId
+	WHERE Dog.Id = @DogId
+END;
 
+EXEC ChangeOwner @DogId = 6, @OwnerId = 3;
+----------------------- Toggle lost or found dog
+CREATE OR ALTER PROCEDURE ToggleMissing
+@DogId int = NULL AS
+BEGIN
+	UPDATE Dog
+	SET Dog.Lost =
+	(
+		CASE				-- If statement begins here.
+		WHEN Dog.Lost = 0 THEN 1 ELSE 0 END
+	)
+	WHERE Dog.Id = @DogId
+END;
+
+EXEC ToggleMissing @DogId = 3;
+
+SELECT * FROM Dog;
 --------------------------
 /*
 TODO
 - Detaljer om hund:
-	- Använd views för en specifik hund.
-		- Info/Data om hund.
-
-- Övriga funktioner:
-	- Byta ägare.
-	- Anmäla hund som saknad.
-	- Anmäla hund som upphittad.
+	- Info/Data om hund.
 
 - Lägg till extra funktionalitet i "Avkommor till specifik hund version 1 (WIP)" (se TODO).
-- Kan man ha if-statements i NewDog och NewOwner så att man inte kan lägga till OwnerId och RaceId som är utanför de värden som redan existerar?
-- Lägg till en tabell för Sex, blir bättre ifall man ska lägga till förbestämda värden? Man kanske kan använda den med if-statments (se ovan).
+- Lägg till datum för "ToggleMissing"? Behövs en ny kolumn med datum någonstans.
+- Lägg till en tabell för Sex (används främst i PROCEDUREN NewDog).
 - Fix "CREATE UNIQUE NONCLUSTERED INDEX" - We want UNIQUE at the same time as we allow NULL.
 - Lägg in alla Race (kopiera från hemsidan).
 - Beskriv search-funktionen (mest OR och AND som är frågetecken).
