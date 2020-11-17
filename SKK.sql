@@ -116,11 +116,11 @@ WHERE @MySearchString IN (Regnr, [Name], Tattoo, CAST(Chipnr AS varchar(100)), S
 EXEC ListDogs; */
 
 -- SELECT CONVERT(varchar(100), Chipnr) FROM Dog;				-- DEBUG/TESTING
-
+--------- Search test (early version)
 /*DECLARE @MySearchString varchar(100) = '%Terrific%'		-- TODO: Only searches the whole string!
 --PRINT @MySearchString
 SELECT Regnr, Dog.[Name], Tattoo, Chipnr, Sex, Race.[Name] AS Race FROM Dog INNER JOIN Race ON Race.Id = Dog.RaceId
-WHERE Regnr + ' ' + Dog.[Name] + ' ' + Tattoo + ' ' + Chipnr + ' ' + Sex + ' ' + Race.[Name] LIKE @MySearchString; */	-- Garbage, doesn't work.
+WHERE Regnr + ' ' + Dog.[Name] + ' ' + Tattoo + ' ' + Chipnr + ' ' + Sex + ' ' + Race.[Name] LIKE @MySearchString; */	-- Should work but have probably changed something. Problem: Will not return the row if any field is NULL. TODO: Might be possible to remove the ' '?
 
 /* DECLARE @MySearchString varchar(100) = '%Terrific%'		-- TODO: Only searches the whole string!
 SELECT Regnr + ' ' + [Name] FROM Dog
