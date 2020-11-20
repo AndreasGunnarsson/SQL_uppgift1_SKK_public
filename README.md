@@ -1,6 +1,6 @@
 # Processen
-Skriva ner snabba funderingar och sedan direkt gå på ER-modelleringen.
-Utgick från de sökresultat man fick och det som efterfrågades i uppgiftsbeskrivningen för att hitta entiteterna.
+Skrev ner snabba funderingar och sedan direkt gå på ER-modelleringen.
+Utgick från de sökresultat man fick från SKK-hemsidan och det som efterfrågades i uppgiftsbeskrivningen för att hitta entiteterna.
 Tänkte att det mesta borde utgå från hunden och den blev då en central del i modellen.
 
 ---
