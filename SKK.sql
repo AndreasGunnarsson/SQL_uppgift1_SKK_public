@@ -53,15 +53,15 @@ DROP PROC IF EXISTS ChangeOwner
 DROP PROC IF EXISTS ToggleMissing
 
 -------------------------- CREATE new tables
-CREATE TABLE Race (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(100) NOT NULL);
-CREATE TABLE Dog (Id int IDENTITY(1,1) PRIMARY KEY, OwnerId int, KullId int, Lost bit DEFAULT 0, Regnr varchar(50) NOT NULL, [Name] varchar(50), Tattoo varchar(50), Chipnr varchar(50), RaceId int, Sex varchar(1), Color varchar(50));
+CREATE TABLE Race (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(100) NOT NULL UNIQUE);
+CREATE TABLE Dog (Id int IDENTITY(1,1) PRIMARY KEY, OwnerId int, KullId int, Lost bit DEFAULT 0, Regnr varchar(50) NOT NULL, [Name] varchar(50), Tattoo varchar(50), Chipnr varchar(50), RaceId int, Sex varchar(1) NOT NULL, Color varchar(50));
 CREATE TABLE [Owner] (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(50), [Address] varchar(50), Telephone varchar(50), Mobile varchar(50), TelephoneWork varchar(50));
-CREATE TABLE Veterinary (Id int IDENTITY(1,1) PRIMARY KEY, DogId int, [Date] date, [Name] varchar(50), [Result] varchar(50));
+CREATE TABLE Veterinary (Id int IDENTITY(1,1) PRIMARY KEY, DogId int NOT NULL, [Date] date NOT NULL, [Name] varchar(50) NOT NULL, [Result] varchar(50) NOT NULL);
 CREATE TABLE Kull (Id int IDENTITY(1,1) PRIMARY KEY, UppfödarId int, [Date] date, MotherId int, FatherId int);
 CREATE TABLE Uppfödare (Id int IDENTITY(1,1) PRIMARY KEY, KennelId int, [Name] varchar(50), [Address] varchar(50), Email varchar(50), Mobile varchar(50));
-CREATE TABLE Kennel (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(50));
+CREATE TABLE Kennel (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(50) NOT NULL UNIQUE);
 
--- CREATE TABLE Race (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(100) NOT NULL UNIQUE);
+
 -- CREATE TABLE Dog (Id int IDENTITY(1,1) PRIMARY KEY, OwnerId int, KullId int, Lost bit DEFAULT 0, Regnr varchar(50) NOT NULL UNIQUE, [Name] varchar(50), Tattoo varchar(50) UNIQUE, Chipnr varchar(50) UNIQUE, RaceId int, Sex varchar(1), Color varchar(50));
 -- CREATE UNIQUE NONCLUSTERED INDEX I2 ON Race([Name]) WHERE [Name] IS NOT NULL; -- UNIQUE: The index must be unique.	-- TODO: Get this to work! We want unique indexes!
 
@@ -215,13 +215,13 @@ BEGIN
 	DECLARE @KullIdentity int = NULL
 	SELECT @KullIdentity = Kull.Id FROM Kull WHERE Kull.MotherId = @DogId OR Kull.FatherId = @DogId
 
-	SELECT * FROM Kull INNER JOIN Dog ON Dog.KullId = Kull.Id WHERE Dog.KullId = @KullIdentity
+	SELECT Dog.Regnr, Dog.[Name], Dog.Sex, Kull.[Date], Kull.FatherId, Kull.MotherId FROM Kull INNER JOIN Dog ON Dog.KullId = Kull.Id WHERE Dog.KullId = @KullIdentity
 	-- SELECT @KullIdentity AS KullIdentity			-- Debug.
 END;
 -- TODO: Utskriften blir fel då vi måste ha olika utskrifter beroende på ifall hunden vi kollade var en "T" eller "H" (Dog.Sex).
 -- TODO: Ska inte skriva ut alla kolumner (*)!
 
---EXEC DogAvkomma @DogId = 3;												-- DEBUG
+EXEC DogAvkomma @DogId = 3;												-- DEBUG
 
 -- Debug below:
 /*
