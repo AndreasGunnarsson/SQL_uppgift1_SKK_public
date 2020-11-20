@@ -61,10 +61,6 @@ CREATE TABLE Kull (Id int IDENTITY(1,1) PRIMARY KEY, UppfödarId int, [Date] dat
 CREATE TABLE Uppfödare (Id int IDENTITY(1,1) PRIMARY KEY, KennelId int, [Name] varchar(50), [Address] varchar(50), Email varchar(50), Mobile varchar(50));
 CREATE TABLE Kennel (Id int IDENTITY(1,1) PRIMARY KEY, [Name] varchar(50) NOT NULL UNIQUE);
 
-
--- CREATE TABLE Dog (Id int IDENTITY(1,1) PRIMARY KEY, OwnerId int, KullId int, Lost bit DEFAULT 0, Regnr varchar(50) NOT NULL UNIQUE, [Name] varchar(50), Tattoo varchar(50) UNIQUE, Chipnr varchar(50) UNIQUE, RaceId int, Sex varchar(1), Color varchar(50));
--- CREATE UNIQUE NONCLUSTERED INDEX I2 ON Race([Name]) WHERE [Name] IS NOT NULL; -- UNIQUE: The index must be unique.	-- TODO: Get this to work! We want unique indexes!
-
 ALTER TABLE Dog ADD FOREIGN KEY (OwnerId) REFERENCES [Owner](Id);
 ALTER TABLE Dog ADD FOREIGN KEY (KullId) REFERENCES Kull(Id);
 ALTER TABLE Dog ADD FOREIGN KEY (RaceId) REFERENCES Race(Id);
@@ -106,8 +102,6 @@ INSERT INTO Veterinary(DogId, [Date], [Name], [Result]) VALUES (5, '2006-12-15',
 INSERT INTO Veterinary(DogId, [Date], [Name], [Result]) VALUES (3, '1999-05-27', 'Anicura Animalen Djursjukhus', 'HD ua');				-- Morsan.
 INSERT INTO Veterinary(DogId, [Date], [Name], [Result]) VALUES (4, '1997-10-07', 'Väsby Djursjukhus', 'HD ua');							-- Farsan.
 
--- INSERT INTO Race([Name]) VALUES ('Race1'), ('Parson Russell Terrier'), ('Race3'), ('Race4'), ('Race1');			-- TODO: To test UNIQUE. We have to use the CREATE UNIQUE NONCLUSTERED INDEX somehow above..
-
 -------------------------- Count the dogs PROCEDURE
 CREATE OR ALTER PROCEDURE CountDogs AS 
 BEGIN
@@ -144,22 +138,7 @@ BEGIN
 	AND (@Race IS NULL OR Race = @Race)
 END
 
--------------------------- Search version 1
-/* DECLARE @SearchString varchar(100) = '%T%'		-- Works. The limitiation is that we cant search a specific field withouth changin the WHERE. In version 2 we have a specific variable.
-SELECT Regnr, Dog.[Name], Tattoo, Chipnr, Sex, Race.[Name] AS Race
-FROM Dog INNER JOIN Race ON Race.Id = Dog.RaceId
-WHERE Sex LIKE @SearchString; */
-
---------------------- Search version 2 - Adds a variable for choosing a column.
-
-/* CREATE OR ALTER PROCEDURE SearchDog1 @MySearchString varchar(100) = 'T', @SelectedColumn varchar(100) = 'Sex' AS		-- Stored procedure with parameters. These parameters are not different from a DECLARE.
-BEGIN
-	DECLARE @SelectedColumnMerge varchar(500) = 'SELECT Regnr, Dog.[Name], Tattoo, Chipnr, Sex, Race.[Name] FROM Dog INNER JOIN Race ON Race.Id=Dog.RaceId WHERE ' + @SelectedColumn + ' LIKE ''%' + @MySearchString + '%'''	-- We've added the % signs into the dynamic SQL statement so that the parameters and arguments will be easier for the user. Two single quote (') works as a delimiter.
-	EXEC (@SelectedColumnMerge)			-- Will execute the "dynamic SQL statement". TODO: explain this exec; what differs it from the one below?
-END;
-
-EXEC SearchDog1; */
---------------------- Search version 3 - Combination of "Search version 2", the view DogList and 
+--------------------- Search alternative version PROCEDURE
 CREATE OR ALTER PROCEDURE SearchDogAlternative
 @SearchString varchar(100) = NULL,
 @SelectedColumn varchar(100) = NULL AS
@@ -216,38 +195,8 @@ BEGIN
 	SELECT @KullIdentity = Kull.Id FROM Kull WHERE Kull.MotherId = @DogId OR Kull.FatherId = @DogId
 
 	SELECT Dog.Regnr, Dog.[Name], Dog.Sex, Kull.[Date], Kull.FatherId, Kull.MotherId FROM Kull INNER JOIN Dog ON Dog.KullId = Kull.Id WHERE Dog.KullId = @KullIdentity
-	-- SELECT @KullIdentity AS KullIdentity			-- Debug.
 END;
--- TODO: Utskriften blir fel då vi måste ha olika utskrifter beroende på ifall hunden vi kollade var en "T" eller "H" (Dog.Sex).
--- TODO: Ska inte skriva ut alla kolumner (*)!
 
-EXEC DogAvkomma @DogId = 3;												-- DEBUG
-
--- Debug below:
-/*
-SELECT * FROM Kull;
-SELECT * FROM Dog;
-SELECT * FROM Kull INNER JOIN Dog ON Dog.KullId = Kull.Id WHERE Kull.MotherId = 2;		-- 2 = Mammas mamma. Visar morsan.
-SELECT * FROM Kull INNER JOIN Dog ON Dog.KullId = Kull.Id WHERE Kull.FatherId = 4;		-- 4 = Pappan. Visar alla avkommor (huvudkaraktär, bror och syster).
-SELECT * FROM Kull INNER JOIN Dog ON Dog.KullId = Kull.Id WHERE Kull.FatherId = 1;		-- 1 = Mammas pappa. Visar morsan.
-SELECT * FROM Kull INNER JOIN Dog ON Dog.KullId = Kull.Id WHERE Kull.MotherId = 3;		-- 3 = Mamman. Visar alla avkommor (huvudkaraktär, bror och syster).
-*/
--- Kolla ett Dog.Id
-	-- Om det är en morsa (får man reda på ifall Kull.MotherId inte är NULL)
-		-- Skriv ut: Regnr, Namn, Kön, Födelsedatum, Faderns regnr, Faderns namn
-			-- Faderns regnr och namn får man ut genom att kolla raden med samma Kull.Id som MotherId.
--- Exempel: Vi kollar Dog.Id 3 (en mamma).
-	-- WHERE Kull.MotherId = 3 > @FatherIdentity = Kull.FatherId > @KullIdentity = Kull.Id
-	-- Skriv ut 
-
--- Om man kollar en morsa:
-	-- Regnr, Namn, Kön, Födelsedatum, Faderns regnr, Faderns namn
-		-- Regnr, Namn, Kön: Från Dog.
-			-- Födelsedatum, Faderns regnr, faderns namn: Från Kull.
--- Om man kollar på en farsa:
-	-- Regnr, Namn, Kön, Födelsedatum, Moderns regnr, moderns namn
-
--- Är bara Dog.Id 1,2,3 och 4 som har avkommor.
 ----------------------- Register new dog PROCEDURE
 CREATE OR ALTER PROCEDURE NewDog
 @OwnerId int = NULL,
@@ -298,21 +247,3 @@ BEGIN
 	)
 	WHERE Dog.Id = @DogId
 END;
-
---------------------------
-/*
-TODO
-- Detaljer om hund:
-	- Info/Data om hund.
-
-- Fix "CREATE UNIQUE NONCLUSTERED INDEX" - We want UNIQUE at the same time as we allow NULL.
-- Lägg till extra funktionalitet i "Avkommor till specifik hund version 1 (WIP)" (se TODO).
-- Lägg till datum för "ToggleMissing"? Behövs en ny kolumn med datum någonstans.
-- Lägg till en tabell för Sex (används främst i PROCEDUREN NewDog).
-- Lägg in alla Race (kopiera från hemsidan).
-- Står att "self join" ska vara användbart till "Avkomma"?
-- Beskriv search-funktionen (mest OR och AND som är frågetecken).
-- Clean up unused code.
-- Fundera på index..
-- Kolla performance.
-*/
