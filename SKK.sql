@@ -355,11 +355,12 @@ TODO
 - Detaljer om hund:
 	- Info/Data om hund.
 
+- Fix "CREATE UNIQUE NONCLUSTERED INDEX" - We want UNIQUE at the same time as we allow NULL.
 - Lägg till extra funktionalitet i "Avkommor till specifik hund version 1 (WIP)" (se TODO).
 - Lägg till datum för "ToggleMissing"? Behövs en ny kolumn med datum någonstans.
 - Lägg till en tabell för Sex (används främst i PROCEDUREN NewDog).
-- Fix "CREATE UNIQUE NONCLUSTERED INDEX" - We want UNIQUE at the same time as we allow NULL.
 - Lägg in alla Race (kopiera från hemsidan).
+- Står att "self join" ska vara användbart till "Avkomma"?
 - Beskriv search-funktionen (mest OR och AND som är frågetecken).
 - Clean up unused code.
 - Fundera på index..
