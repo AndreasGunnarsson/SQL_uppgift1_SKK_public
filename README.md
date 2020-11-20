@@ -1,31 +1,31 @@
-Processen:
-Skriva ner snabba funderingar och sedan direkt gå på ER-modelleringen.
-Utgick från de sökresultat man fick och det som efterfrågades i uppgiftsbeskrivningen för att hitta entiteterna.
-Tänkte att det mesta borde utgå från hunden och den blev då en central del i modellen.
+#Processen
+Skriva ner snabba funderingar och sedan direkt gÃ¥ pÃ¥ ER-modelleringen.
+Utgick frÃ¥n de sÃ¶kresultat man fick och det som efterfrÃ¥gades i uppgiftsbeskrivningen fÃ¶r att hitta entiteterna.
+TÃ¤nkte att det mesta borde utgÃ¥ frÃ¥n hunden och den blev dÃ¥ en central del i modellen.
 
----------------
-Saker som inte blev färdiga:
+---
+#Saker som inte blev fÃ¤rdiga
 
-INDEX och sökning/optimering:
-Skulle vilja ha använt INDEX där det hade varit vettigt att ha. Tänker att det borde använda det på vissa kolumner som det inte skrivs så mycket till men som det samtidigt läses mycket ifrån. Men man bör också ha i åtanke att flera INDEX kommer att ta fysisk plats på SQL-databasens servrar (vet inte alls hur mycket plats en medelstor databas tar dock).
-Regnr och andra nummer känns generellt rätt så specifika och inget som man generellt söker på så hade kanske lagt det på Dog.[Name] eller liknande.
+##INDEX och sÃ¶kning/optimering
+Skulle vilja ha anvÃ¤nt INDEX dÃ¤r det hade varit vettigt att ha. TÃ¤nker att det borde anvÃ¤nda det pÃ¥ vissa kolumner som det inte skrivs sÃ¥ mycket till men som det samtidigt lÃ¤ses mycket ifrÃ¥n. Men man bÃ¶r ocksÃ¥ ha i Ã¥tanke att flera INDEX kommer att ta fysisk plats pÃ¥ SQL-databasens servrar (vet inte alls hur mycket plats en medelstor databas tar dock).
+Regnr och andra nummer kÃ¤nns generellt rÃ¤tt sÃ¥ specifika och inget som man generellt sÃ¶ker pÃ¥ sÃ¥ hade kanske lagt det pÃ¥ Dog.[Name] eller liknande.
 
-CONSTRAINTS:
-Kunde lagt mer tid på att använda rätt constraints. T.ex. borde "Dog.Tattoo" och "Dog.Chipnr" vara UNIQU men då är problemet att de också får vara NULL (då det inte är ett måste att en hund har en tatuering eller ett chipnr).
-Går att använda INDEX på något sätt för att lösa detta!
+##CONSTRAINTS
+Kunde lagt mer tid pÃ¥ att anvÃ¤nda rÃ¤tt constraints. T.ex. borde "Dog.Tattoo" och "Dog.Chipnr" vara UNIQU men dÃ¥ Ã¤r problemet att de ocksÃ¥ fÃ¥r vara NULL (dÃ¥ det inte Ã¤r ett mÃ¥ste att en hund har en tatuering eller ett chipnr).
+GÃ¥r att anvÃ¤nda INDEX pÃ¥ nÃ¥got sÃ¤tt fÃ¶r att lÃ¶sa detta!
 
-DogAvkomma PROCEDURE:
-Denna procedure ger inte exakt det sökresultat man önskar. Det som saknas är att ifall det är en tik (en morsa) man söker efter så borde det stå "Father regnr" och "Father name", och ifall ldet är en hane (en farsa) så borde kolumnerna visa "Mother regnr" samt "Mother name".. Just nu visar den bara ett Id för morsan/farsan samt att dessa kolumner (både morsa och farsa) alltid visas.
-Tror att detta hade gått att lösa med en subquery och något mer "IF" eller alternativt ett "CASE".
+##DogAvkomma PROCEDURE
+Denna procedure ger inte exakt det sÃ¶kresultat man Ã¶nskar. Det som saknas Ã¤r att ifall det Ã¤r en tik (en morsa) man sÃ¶ker efter sÃ¥ borde det stÃ¥ "Father regnr" och "Father name", och ifall ldet Ã¤r en hane (en farsa) sÃ¥ borde kolumnerna visa "Mother regnr" samt "Mother name".. Just nu visar den bara ett Id fÃ¶r morsan/farsan samt att dessa kolumner (bÃ¥de morsa och farsa) alltid visas.
+Tror att detta hade gÃ¥tt att lÃ¶sa med en subquery och nÃ¥got mer "IF" eller alternativt ett "CASE".
 
-Datum för missing/Lost dog:
-Hade varit coolt med ett datum som antecknades då hunden försvann. Kanske att det datumet försvinner (NULL) då hunden är upphittad igen.
+##Datum fÃ¶r missing/Lost dog
+Hade varit coolt med ett datum som antecknades dÃ¥ hunden fÃ¶rsvann. Kanske att det datumet fÃ¶rsvinner (NULL) dÃ¥ hunden Ã¤r upphittad igen.
 
-Sex/kön i egen tabell:
-Inte det mest meningsfulla men känns logiskt, borde vara en förutbestämd lista av något slag när man ska lägga till en hund precis som med Race-tabellen.
+##Sex/kÃ¶n i egen tabell
+Inte det mest meningsfulla men kÃ¤nns logiskt, borde vara en fÃ¶rutbestÃ¤md lista av nÃ¥got slag nÃ¤r man ska lÃ¤gga till en hund precis som med Race-tabellen.
 
-Ras-tabellen:
-Hade varit en grym bonus ifall man läste in alla olika raser som finns i denna tabell. En detalj som inte har så mycket med själva SQL:en att göra men hade varit mer komplett.
+##Ras-tabellen
+Hade varit en grym bonus ifall man lÃ¤ste in alla olika raser som finns i denna tabell. En detalj som inte har sÃ¥ mycket med sjÃ¤lva SQL:en att gÃ¶ra men hade varit mer komplett.
 
-Veterinary-tabellen:
-Borde antagligen också ha några förutbestämd värden/tabeller för Name och Result men vet inte hur detta funkar exakt i verkliga livet.
+##Veterinary-tabellen
+Borde antagligen ocksÃ¥ ha nÃ¥gra fÃ¶rutbestÃ¤md vÃ¤rden/tabeller fÃ¶r Name och Result men vet inte hur detta funkar exakt i verkliga livet.
